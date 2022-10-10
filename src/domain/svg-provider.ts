@@ -54,7 +54,7 @@ export const createSVG = (
   // if stroke width > 0 ---> translate path so all the stroke will be visible
   if(strokeSize > 0){
     d = svgpath(d)
-      .translate(strokeSize, strokeSize)
+      .translate(strokeSize + 1, strokeSize + 1)
       .rel()
       .toString();
   }
@@ -64,13 +64,12 @@ export const createSVG = (
     // path should be scaled to match the container height
     // aspect ratio should be kept
     // container width should be equal to the path width
-    const temp = strokeSize > 0 ? containerHeight - strokeSize - 1 : containerHeight;
+    const temp = strokeSize > 0 ? containerHeight - strokeSize : containerHeight;
     const scale = temp / pathHeight;
 
     d = svgpath(d)
       .scale(scale, scale)
       .rel()
-      .round(1)
       .toString();
   }
   else{
@@ -78,13 +77,12 @@ export const createSVG = (
     // path should be scaled to match the container width
     // aspect ratio should be kept
     // container height should be equal to the path height
-    const temp = strokeSize > 0 ? containerWidth - strokeSize - 1 : containerWidth;
+    const temp = strokeSize > 0 ? containerWidth - strokeSize : containerWidth;
     const scale = temp / pathWidth;
 
     d = svgpath(d)
       .scale(scale, scale)
       .rel()
-      .round(1)
       .toString();
   }
 
@@ -96,8 +94,11 @@ export const createSVG = (
   svgHeight = pathHeight;
 
   if(strokeSize > 0){
-    svgWidth += strokeSize + 1;
-    svgHeight += strokeSize + 1;
+    svgWidth += strokeSize + strokeSize/2 + 1;
+    svgHeight += strokeSize + strokeSize/2 + 1;
+
+    svgWidth = Math.ceil(svgWidth);
+    svgHeight = Math.ceil(svgHeight);
   }
 
   // update svg props -----------------
