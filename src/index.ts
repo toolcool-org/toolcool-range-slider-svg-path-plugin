@@ -93,13 +93,24 @@ const SVGPathPlugin = () : IPlugin => {
     const percents = getters?.getPercents() ?? [];
     if(percents.length <= 0) return;
 
+    const $pointers = getters?.getPointerElements() ?? [];
     const oneOnly = percents.length === 1;
     const first = percents[0] as number;
     const last = percents[percents.length - 1] as number;
     const type = getters?.getType();
 
     if (type === 'vertical') {
-      const height = oneOnly ? first : Math.abs(first - last);
+
+      let height = 0;
+      if(oneOnly){
+        const pointerHalfHeight = $pointers[0].getBoundingClientRect().height / 2;
+        const pointerPercent = pointerHalfHeight * 100 / $svg.getBoundingClientRect().height;
+        height = first + pointerPercent;
+      }
+      else{
+        height = Math.abs(first - last);
+      }
+
       // @ts-ignore
       $maskRect.setAttribute('height', `${ height }%`);
 
@@ -123,41 +134,18 @@ const SVGPathPlugin = () : IPlugin => {
 
       // @ts-ignore
       $maskRect.setAttribute('y', `${ top }%`);
-
-      /*$fill.style.removeProperty('width');
-      $fill.style.removeProperty('right');
-      $fill.style.removeProperty('left');
-
-      if (!oneOnly) {
-        $fill.style.height = `${Math.abs(first - last)}%`;
-      }
-      else{
-        $fill.style.height = `${ first }%`;
-      }
-
-      if (bottomToTop) {
-        $fill.style.bottom = '0%';
-
-        if (!oneOnly) {
-          $fill.style.top = `${Math.min(100 - last, 100 - first)}%`;
-        }
-        else{
-          $fill.style.top = 'auto';
-        }
-      }
-      else {
-        $fill.style.bottom = 'auto';
-
-        if (!oneOnly) {
-          $fill.style.top = `${Math.min(first, last)}%`;
-        }
-        else{
-          $fill.style.top = '0%';
-        }
-      }*/
     }
     else {
-      const width = oneOnly ? first : Math.abs(first - last);
+      let width = 0;
+      if(oneOnly){
+        const pointerHalfWidth = $pointers[0].getBoundingClientRect().width / 2;
+        const pointerPercent = pointerHalfWidth * 100 / $svg.getBoundingClientRect().width;
+        width = first + pointerPercent;
+      }
+      else{
+        width = Math.abs(first - last);
+      }
+
       // @ts-ignore
       $maskRect.setAttribute('width', `${ width }%`);
 
