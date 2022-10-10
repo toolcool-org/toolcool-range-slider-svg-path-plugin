@@ -128,7 +128,7 @@ export const createSVG = (
 
   // everything under a black pixel will be invisible
   // everything under a white pixel will be visible
-  $mask.innerHTML = `<rect x="0" y="0" width="0" height="0" fill="#fff" />`;
+  $mask.innerHTML = `<rect x="0" y="0" width="${ svgWidth }" height="${ svgHeight }" fill="#fff" />`;
 
   let $defs = $svg.querySelector('defs');
 

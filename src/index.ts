@@ -22,9 +22,10 @@ const SVGPathPlugin = () : IPlugin => {
 
   let $slider: HTMLElement | undefined = undefined;
   let $panel: HTMLElement | undefined = undefined;
+
   let $svg: SVGSVGElement | undefined = undefined;
   let $path: SVGPathElement | undefined = undefined;
-  let $mask: SVGMaskElement | undefined = undefined;
+  let $maskRect: SVGRect | undefined = undefined;
 
   let resizeObserver: ResizeObserver | null = null;
 
@@ -38,10 +39,13 @@ const SVGPathPlugin = () : IPlugin => {
     const [_$svg, _$path, _$mask] = createSVG(width, height, svgPath, strokeWidth);
     $svg = _$svg as SVGSVGElement;
     $path = _$path as SVGPathElement;
-    $mask = _$mask as SVGMaskElement;
+
+    const $mask = _$mask as SVGMaskElement;
+    $maskRect = $mask.querySelector('rect') as unknown as SVGRect ?? undefined;
     $panel.before(_$svg);
 
     updatePointers();
+    updateFill();
   };
 
   const initResizeObserver = () => {
@@ -62,12 +66,13 @@ const SVGPathPlugin = () : IPlugin => {
     const $pointers = getters?.getPointerElements() ?? [];
     const percents = getters?.getPercents() ?? [];
     const svgLength = $path.getTotalLength();
+    const isReversed = getters?.isRightToLeft() || getters?.isBottomToTop();
 
     for(let i=0; i<percents.length; i++) {
       const $pointer = $pointers[i];
       if (!$pointer) continue;
 
-      const percent = percents[i];
+      const percent = isReversed ? 100 - percents[i] : percents[i];
       const absoluteDistance = svgLength * percent / 100;
       const svgPoint = $path.getPointAtLength(absoluteDistance);
 
@@ -81,8 +86,107 @@ const SVGPathPlugin = () : IPlugin => {
     }
   };
 
+  const updateFill = () => {
+
+    if(!$maskRect || !$svg) return;
+
+    const percents = getters?.getPercents() ?? [];
+    if(percents.length <= 0) return;
+
+    const oneOnly = percents.length === 1;
+    const first = percents[0] as number;
+    const last = percents[percents.length - 1] as number;
+    const type = getters?.getType();
+
+    if (type === 'vertical') {
+      const height = oneOnly ? first : Math.abs(first - last);
+      // @ts-ignore
+      $maskRect.setAttribute('height', `${ height }%`);
+
+      let top = 0;
+      if (getters?.isBottomToTop()) {
+        if(oneOnly){
+          top = 100 - first;
+        }
+        else{
+          top = Math.min(100 - last, 100 - first);
+        }
+      }
+      else {
+        if(oneOnly){
+          top = 0;
+        }
+        else{
+          top = Math.min(first, last);
+        }
+      }
+
+      // @ts-ignore
+      $maskRect.setAttribute('y', `${ top }%`);
+
+      /*$fill.style.removeProperty('width');
+      $fill.style.removeProperty('right');
+      $fill.style.removeProperty('left');
+
+      if (!oneOnly) {
+        $fill.style.height = `${Math.abs(first - last)}%`;
+      }
+      else{
+        $fill.style.height = `${ first }%`;
+      }
+
+      if (bottomToTop) {
+        $fill.style.bottom = '0%';
+
+        if (!oneOnly) {
+          $fill.style.top = `${Math.min(100 - last, 100 - first)}%`;
+        }
+        else{
+          $fill.style.top = 'auto';
+        }
+      }
+      else {
+        $fill.style.bottom = 'auto';
+
+        if (!oneOnly) {
+          $fill.style.top = `${Math.min(first, last)}%`;
+        }
+        else{
+          $fill.style.top = '0%';
+        }
+      }*/
+    }
+    else {
+      const width = oneOnly ? first : Math.abs(first - last);
+      // @ts-ignore
+      $maskRect.setAttribute('width', `${ width }%`);
+
+      let left = 0;
+      if (getters?.isRightToLeft()) {
+        if(oneOnly){
+          left = 100 - first;
+        }
+        else{
+          left = Math.min(100 - last, 100 - first);
+        }
+      }
+      else {
+        if(oneOnly){
+          left = 0;
+        }
+        else{
+          left = Math.min(first, last);
+        }
+      }
+
+      // @ts-ignore
+      $maskRect.setAttribute('x', `${ left }%`);
+    }
+  };
+
   const update = (_data: IPluginUpdateData) => {
     updatePointers();
+    updateFill();
   };
 
   const destroy = () => {
@@ -90,7 +194,7 @@ const SVGPathPlugin = () : IPlugin => {
 
     $svg = undefined;
     $path = undefined;
-    $mask = undefined;
+    $maskRect = undefined;
 
     resizeObserver?.disconnect();
   };
