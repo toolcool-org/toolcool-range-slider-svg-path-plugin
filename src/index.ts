@@ -245,8 +245,13 @@ const SVGPathPlugin = () : IPlugin => {
 
 .pointer,
 .pointer-shape{
- transform: none !important;
- transition: none !important;
+ transform: none;
+ transition: none;
+}
+
+.animate-on-click .pointer, 
+.animate-on-click .panel-fill {
+   transition: none;
 }
 
 /*#range-slider{
