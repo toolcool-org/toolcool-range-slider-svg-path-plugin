@@ -19,7 +19,8 @@
               value="0"
               round="0"
 
-              generate-labels="false"
+              moving-tooltip="true"
+              moving-tooltip-bg="#86a34c"
 
               svg-path="M5 5c25 49.875 50 74.8125 75 74.8125C117.5 79.8125 117.5 5 155 5s37.5 74.8125 75 74.8125S267.5 5 305 5s37.5 74.8125 75 74.8125S417.5 5 455 5s37.5 74.8125 75 74.8125c25 0 50-24.9375 75-74.8125"
               svg-path-stroke-width="10"
@@ -45,61 +46,47 @@
         </div>
     </div>
 
-    <script src="../dist/tcrs-svg-path.min.js"></script>
     <script
-      src="https://cdn.jsdelivr.net/npm/toolcool-range-slider/dist/plugins/tcrs-generated-labels.min.js"></script>
+      src="https://cdn.jsdelivr.net/npm/toolcool-range-slider/dist/plugins/tcrs-moving-tooltip.min.js"></script>
+    <script src="../dist/tcrs-svg-path.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/toolcool-range-slider/dist/toolcool-range-slider.min.js"></script>
-    <script src="js/svg-path-properties.min.js"></script>
     <script>
-        const $slider = document.getElementById('car-slider');
-        const $pointer = $slider.shadowRoot.querySelector('.pointer-0');
+        window.addEventListener('DOMContentLoaded', (event) => {
+            window.setTimeout(() => {
+                const $slider = document.getElementById('car-slider');
+                const $pointer = $slider.shadowRoot.querySelector('.pointer-0');
+                const $pointerShape = $pointer.querySelector('.pointer-shape');
+                const $tooltip = $slider.shadowRoot.querySelector('.tooltip');
 
-        const $path = $slider.shadowRoot.querySelector('.path-svg path');
-        const d = $path.getAttribute('d');
-        const properties = new svgPathProperties.svgPathProperties(d);
+                $slider.addCSS(`
+.tooltip{
+    transform: translate(10%, -120%);
+    z-index: 100;
+}
+            `);
 
-        let x = undefined;
-        let y = undefined;
+                let percent = undefined;
+                $slider.addEventListener('change', (evt) => {
 
-        $slider.addEventListener('change', (evt) => {
+                    const _percent = evt.detail.value;
 
-            const percent = Number($pointer.getAttribute('aria-valuenow')) ?? 0;
-            const distance = $slider.shadowRoot.querySelector('.path-svg').getBoundingClientRect().width * percent / 100;
+                    if(percent !== undefined && percent !== _percent){
+                        if(_percent < percent){
+                            $pointerShape.style.transform = `scaleX(-1)`;
+                        }
+                        else{
+                            $pointerShape.style.transform = `scaleX(1)`;
+                        }
+                    }
 
-            const rect = $pointer.getBoundingClientRect();
-            const _x = rect.x;
-            const _y = rect.y;
+                    percent = _percent;
+                    $tooltip.style.left = $pointer.style.left;
+                    $tooltip.style.top = $pointer.style.top;
+                });
 
-            const tangent = properties.getTangentAtLength(distance);
-
-            if(x !== undefined && y !== undefined){
-
-                /*var firstPoint = path.getPointAtLength(scrollPercentage * pathLen);
-                var secondPoint = path.getPointAtLength(scrollPercentage * (pathLen + 3));
-
-//Get degree
-                var deg = Math.atan2(firstPoint.y - secondPoint.y, firstPoint.x - secondPoint.x) * (180 / Math.PI);
-                console.log(deg);
-                var element = document.getElementById("wipe");
-                element.setAttribute("transform", "translate("+ pt.x  + "," + pt.y + ") rotate(" + pt.deg + ")");*/
-
-                /* determine angle of longest line segement relative to x axis */
-                /*let dY = _y - y;
-                let dX = _x - x;
-                let angleInDegrees = Math.atan2(dY,dX) * (180 / Math.PI);
-
-                /!* if text would be upside down, rotate through 180 degrees: *!/
-                if( (angleInDegrees > 90 && angleInDegrees < 270) || (angleInDegrees < -90 && angleInDegrees > -270)) {
-                    angleInDegrees += 180;
-                    angleInDegrees %= 360;
-                }*/
-                const angleInDegrees = Math.atan2(tangent.y, tangent.x)* (180 / Math.PI);
-                $pointer.style.transform = `rotate(${ angleInDegrees }deg`;
-
-            }
-
-            x = _x;
-            y = _y;
+                $tooltip.style.left = $pointer.style.left;
+                $tooltip.style.top = $pointer.style.top;
+            }, 100);
         });
     </script>
 </body>
