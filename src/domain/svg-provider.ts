@@ -124,6 +124,7 @@ export const createSVG = (
   // create fill mask -----------------------------------------
   const $mask = document.createElementNS(SVG_NAMESPACE, 'mask');
   const maskId = `mask-${ generateUUID() }`;
+  $mask.setAttribute('maskUnits', 'userSpaceOnUse');
   $mask.id = maskId;
 
   // everything under a black pixel will be invisible

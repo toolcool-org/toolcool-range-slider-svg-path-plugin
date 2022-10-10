@@ -93,24 +93,13 @@ const SVGPathPlugin = () : IPlugin => {
     const percents = getters?.getPercents() ?? [];
     if(percents.length <= 0) return;
 
-    const $pointers = getters?.getPointerElements() ?? [];
     const oneOnly = percents.length === 1;
     const first = percents[0] as number;
     const last = percents[percents.length - 1] as number;
     const type = getters?.getType();
 
     if (type === 'vertical') {
-
-      let height = 0;
-      if(oneOnly){
-        const pointerHalfHeight = $pointers[0].getBoundingClientRect().height / 2;
-        const pointerPercent = pointerHalfHeight * 100 / $svg.getBoundingClientRect().height;
-        height = first + pointerPercent;
-      }
-      else{
-        height = Math.abs(first - last);
-      }
-
+      const height = oneOnly ? first : Math.abs(first - last);
       // @ts-ignore
       $maskRect.setAttribute('height', `${ height }%`);
 
@@ -138,9 +127,7 @@ const SVGPathPlugin = () : IPlugin => {
     else {
       let width = 0;
       if(oneOnly){
-        const pointerHalfWidth = $pointers[0].getBoundingClientRect().width / 2;
-        const pointerPercent = pointerHalfWidth * 100 / $svg.getBoundingClientRect().width;
-        width = first + pointerPercent;
+        width = first;
       }
       else{
         width = Math.abs(first - last);
