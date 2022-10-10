@@ -1,5 +1,6 @@
 import { IPlugin, IPluginUpdateData, IPluginSetters, IPluginGetters } from 'toolcool-range-slider';
 import { createSVG } from './domain/svg-provider';
+import { getNumber } from './domain/math-provider';
 
 /**
  * SVG Path Plugin.
@@ -17,6 +18,8 @@ const SVGPathPlugin = () : IPlugin => {
   let getters: IPluginGetters | undefined = undefined;
 
   let svgPath = '';
+  let strokeWidth = 1;
+
   let $slider: HTMLElement | undefined = undefined;
   let $panel: HTMLElement | undefined = undefined;
   let $svg: SVGSVGElement | undefined = undefined;
@@ -31,7 +34,7 @@ const SVGPathPlugin = () : IPlugin => {
     const width = rect.width;
     const height = rect.height;
 
-    const [_$svg, _$path] = createSVG(width, height, svgPath);
+    const [_$svg, _$path] = createSVG(width, height, svgPath, strokeWidth);
     $svg = _$svg as SVGSVGElement;
     $path = _$path as SVGPathElement;
     $panel.before(_$svg);
@@ -116,6 +119,8 @@ const SVGPathPlugin = () : IPlugin => {
       svgPath = $component.getAttribute('svg-path') ?? '';
       if(!svgPath) return;
 
+      strokeWidth = getNumber($component.getAttribute('svg-path-stroke-width'), 1);
+
       window.setTimeout(() => {
         initResizeObserver();
         init();
@@ -156,9 +161,9 @@ const SVGPathPlugin = () : IPlugin => {
  transition: none !important;
 }
 
-#range-slider{
+/*#range-slider{
   border: 1px solid red;
-}
+}*/
     `,
   };
 };

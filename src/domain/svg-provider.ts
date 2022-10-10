@@ -6,7 +6,7 @@ const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 export const createPath = (
   d: string,
   strokeColor?: string,
-  strokeWidth?: number,
+  strokeSize?: number,
   bgColor?: string
 ) => {
   const $path = document.createElementNS(SVG_NAMESPACE, 'path');
@@ -16,8 +16,8 @@ export const createPath = (
     $path.setAttribute('stroke', strokeColor);
   }
 
-  if(strokeWidth) {
-    $path.setAttribute('stroke-width', strokeWidth.toString());
+  if(strokeSize) {
+    $path.setAttribute('stroke-width', strokeSize.toString());
   }
 
   if(bgColor) {
@@ -27,7 +27,12 @@ export const createPath = (
   return $path;
 };
 
-export const createSVG = (containerWidth: number, containerHeight: number, d: string) => {
+export const createSVG = (
+  containerWidth: number,
+  containerHeight: number,
+  d: string,
+  strokeSize: number
+) => {
 
   let svgWidth = containerWidth;
   let svgHeight = containerHeight;
@@ -43,7 +48,14 @@ export const createSVG = (containerWidth: number, containerHeight: number, d: st
     d = svgpath(d)
       .translate(-x0, -y0)
       .rel()
-      .round(1)
+      .toString();
+  }
+
+  // if stroke width > 0 ---> translate path so all the stroke will be visible
+  if(strokeSize > 0){
+    d = svgpath(d)
+      .translate(strokeSize, strokeSize)
+      .rel()
       .toString();
   }
 
@@ -52,7 +64,8 @@ export const createSVG = (containerWidth: number, containerHeight: number, d: st
     // path should be scaled to match the container height
     // aspect ratio should be kept
     // container width should be equal to the path width
-    const scale = containerHeight / pathHeight;
+    const temp = strokeSize > 0 ? containerHeight - strokeSize - 1 : containerHeight;
+    const scale = temp / pathHeight;
 
     d = svgpath(d)
       .scale(scale, scale)
@@ -65,7 +78,8 @@ export const createSVG = (containerWidth: number, containerHeight: number, d: st
     // path should be scaled to match the container width
     // aspect ratio should be kept
     // container height should be equal to the path height
-    const scale = containerWidth / pathWidth;
+    const temp = strokeSize > 0 ? containerWidth - strokeSize - 1 : containerWidth;
+    const scale = temp / pathWidth;
 
     d = svgpath(d)
       .scale(scale, scale)
@@ -81,6 +95,11 @@ export const createSVG = (containerWidth: number, containerHeight: number, d: st
   svgWidth = pathWidth;
   svgHeight = pathHeight;
 
+  if(strokeSize > 0){
+    svgWidth += strokeSize + 1;
+    svgHeight += strokeSize + 1;
+  }
+
   // update svg props -----------------
   const $svg = document.createElementNS(SVG_NAMESPACE, 'svg');
   $svg.classList.add('path-svg');
@@ -89,10 +108,9 @@ export const createSVG = (containerWidth: number, containerHeight: number, d: st
   $svg.setAttribute('height', svgHeight.toString());
   $svg.setAttribute('viewBox', `0 0 ${ svgWidth } ${ svgHeight }`);
 
-  const $path = createPath(d);
+  const $path = createPath(d, '', strokeSize);
   $path.setAttribute('fill', 'none');
   $path.setAttribute('stroke', 'currentColor');
-  $path.setAttribute('stroke-width', '1');
   $path.setAttribute('stroke-linecap', 'round');
   $path.setAttribute('stroke-linejoin', 'round');
   $svg.append($path);
