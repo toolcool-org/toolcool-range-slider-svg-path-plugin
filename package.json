@@ -1,0 +1,30 @@
+{
+  "name": "toolcool-range-slider-svg-path-plugin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/tcrs-svg-path.min.js",
+  "type": "module",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "build": "node run/index.js",
+    "watch": "node run/index.js -- watch",
+    "eslint": "eslint ./src/**",
+    "typescript-declarations": "tsc --emitDeclarationOnly"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/toolcool-org/toolcool-range-slider-svg-path-plugin.git"
+  },
+  "keywords": [],
+  "author": "Tool Cool <toolcool.org@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/toolcool-org/toolcool-range-slider-svg-path-plugin/issues"
+  },
+  "homepage": "https://github.com/toolcool-org/toolcool-range-slider-svg-path-plugin#readme",
+  "devDependencies": {
+    "esbuild": "^0.15.10"
+  }
+}
