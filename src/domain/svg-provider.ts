@@ -1,5 +1,6 @@
 import svgPathBbox from 'svg-path-bbox'; // https://github.com/toolcool-org/svg-path-bbox
-import svgpath from 'svgpath'; // https://github.com/toolcool-org/svgpath
+import svgpath from 'svgpath';
+import { generateUUID } from './math-provider'; // https://github.com/toolcool-org/svgpath
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
@@ -116,5 +117,28 @@ export const createSVG = (
   $path.setAttribute('stroke-linejoin', 'round');
   $svg.append($path);
 
-  return [$svg, $path];
+  const $fill = $path.cloneNode(true) as SVGPathElement;
+  $fill.classList.add('svg-path-fill');
+  $svg.append($fill);
+
+  // create fill mask -----------------------------------------
+  const $mask = document.createElementNS(SVG_NAMESPACE, 'mask');
+  const maskId = `mask-${ generateUUID() }`;
+  $mask.id = maskId;
+
+  // everything under a black pixel will be invisible
+  // everything under a white pixel will be visible
+  $mask.innerHTML = `<rect x="0" y="0" width="0" height="0" fill="#fff" />`;
+
+  let $defs = $svg.querySelector('defs');
+
+  if(!$defs){
+    $defs = document.createElementNS(SVG_NAMESPACE, 'defs');
+    $svg.prepend($defs);
+  }
+
+  $defs.append($mask);
+  $fill.setAttribute('mask', `url(#${ maskId })`);
+
+  return [$svg, $path, $mask];
 };

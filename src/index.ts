@@ -24,6 +24,7 @@ const SVGPathPlugin = () : IPlugin => {
   let $panel: HTMLElement | undefined = undefined;
   let $svg: SVGSVGElement | undefined = undefined;
   let $path: SVGPathElement | undefined = undefined;
+  let $mask: SVGMaskElement | undefined = undefined;
 
   let resizeObserver: ResizeObserver | null = null;
 
@@ -34,9 +35,10 @@ const SVGPathPlugin = () : IPlugin => {
     const width = rect.width;
     const height = rect.height;
 
-    const [_$svg, _$path] = createSVG(width, height, svgPath, strokeWidth);
+    const [_$svg, _$path, _$mask] = createSVG(width, height, svgPath, strokeWidth);
     $svg = _$svg as SVGSVGElement;
     $path = _$path as SVGPathElement;
+    $mask = _$mask as SVGMaskElement;
     $panel.before(_$svg);
 
     updatePointers();
@@ -85,8 +87,11 @@ const SVGPathPlugin = () : IPlugin => {
 
   const destroy = () => {
     $svg?.remove();
+
     $svg = undefined;
     $path = undefined;
+    $mask = undefined;
+
     resizeObserver?.disconnect();
   };
 
@@ -153,6 +158,10 @@ const SVGPathPlugin = () : IPlugin => {
   z-index: 10;
   left: 0;
   top: 0;
+}
+
+.svg-path-fill{
+  color: var(--panel-bg-fill, #000);
 }
 
 .pointer,
