@@ -52,6 +52,13 @@ export const createSVG = (containerWidth: number, containerHeight: number, d: st
     // path should be scaled to match the container height
     // aspect ratio should be kept
     // container width should be equal to the path width
+    const scale = containerHeight / pathHeight;
+
+    d = svgpath(d)
+      .scale(scale, scale)
+      .rel()
+      .round(1)
+      .toString();
   }
   else{
     // horizontal path ----------------
@@ -60,23 +67,19 @@ export const createSVG = (containerWidth: number, containerHeight: number, d: st
     // container height should be equal to the path height
     const scale = containerWidth / pathWidth;
 
-    console.log('containerWidth', containerWidth, 'pathWidth', pathWidth, 'scale', scale)
-    //const scaleY = containerHeight / pathHeight;
-    //const scale = Math.min(scaleX, scaleY);
-
     d = svgpath(d)
       .scale(scale, scale)
       .rel()
       .round(1)
       .toString();
-
-    [x0, y0, x1, y1] = svgPathBbox(d);
-    pathWidth = Math.abs(x1 - x0);
-    pathHeight = Math.abs(y1 - y0);
-
-    svgWidth = pathWidth;
-    svgHeight = pathHeight;
   }
+
+  [x0, y0, x1, y1] = svgPathBbox(d);
+  pathWidth = Math.abs(x1 - x0);
+  pathHeight = Math.abs(y1 - y0);
+
+  svgWidth = pathWidth;
+  svgHeight = pathHeight;
 
   // update svg props -----------------
   const $svg = document.createElementNS(SVG_NAMESPACE, 'svg');

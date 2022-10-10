@@ -22,6 +22,7 @@ const SVGPathPlugin = () : IPlugin => {
   let $panel: HTMLElement | undefined = undefined;
   let $svg: SVGSVGElement | undefined = undefined;
 
+  let resizeObserver: ResizeObserver | null = null;
 
   const init = () => {
     if(!$slider || !$panel || !svgPath) return;
@@ -31,18 +32,29 @@ const SVGPathPlugin = () : IPlugin => {
     const height = rect.height;
 
     $svg = createSVG(width, height, svgPath);
-    console.log($svg);
-
     $panel.before($svg);
   };
+
+  const initResizeObserver = () => {
+    if(!$component) return;
+    resizeObserver = new ResizeObserver(entries => {
+      // eslint-disable-next-line
+      for (const _entry of entries) {
+        $svg?.remove();
+        init();
+      }
+    });
+    resizeObserver.observe($component);
+  };
+
   const update = (_data: IPluginUpdateData) => {
 
   };
 
   const destroy = () => {
-    $slider = undefined;
-    $panel = undefined;
+    $svg?.remove();
     $svg = undefined;
+    resizeObserver?.disconnect();
   };
 
   return {
@@ -76,6 +88,7 @@ const SVGPathPlugin = () : IPlugin => {
       if(!svgPath) return;
 
       window.setTimeout(() => {
+        initResizeObserver();
         init();
       }, 0);
     },
