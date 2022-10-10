@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Car Example | Tool Cool Range Slider</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+    <h1>Car</h1>
+
+    <!-- icon source: https://www.svgrepo.com/svg/125/car -->
+    <div class="wrapper">
+        <div class="row">
+            <tc-range-slider
+              value="50"
+              round="0"
+              generate-labels="false"
+
+              svg-path="M5 5c25 49.875 50 74.8125 75 74.8125C117.5 79.8125 117.5 5 155 5s37.5 74.8125 75 74.8125S267.5 5 305 5s37.5 74.8125 75 74.8125S417.5 5 455 5s37.5 74.8125 75 74.8125c25 0 50-24.9375 75-74.8125"
+              svg-path-stroke-width="10"
+
+              pointer-width="50px"
+              pointer-height="50px"
+
+              pointer-bg="transparent url(img/car-svgrepo-com.svg) no-repeat 50% 50%"
+              pointer-bg-hover="transparent url(img/car-svgrepo-com.svg) no-repeat 50% 50%"
+              pointer-bg-focus="transparent url(img/car-svgrepo-com.svg) no-repeat 50% 50%"
+
+              pointer-radius="0"
+              pointer-border="none"
+              pointer-border-hover="none"
+              pointer-border-focus="none"
+              pointer-shadow="none"
+              pointer-shadow-hover="none"
+              pointer-shadow-focus="none"
+
+              slider-width="610px"
+              slider-height="85px">
+            </tc-range-slider>
+        </div>
+    </div>
+
+    <script src="../dist/tcrs-svg-path.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/toolcool-range-slider/dist/plugins/tcrs-generated-labels.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toolcool-range-slider/dist/toolcool-range-slider.min.js"></script>
+</body>
+</html>
