@@ -15,7 +15,6 @@ const SVGPathPlugin = () : IPlugin => {
 
   let $component: HTMLElement | undefined = undefined;
   let getters: IPluginGetters | undefined = undefined;
-  let requestUpdate: () => void;
 
   let svgPath = '';
   let $slider: HTMLElement | undefined = undefined;
@@ -67,8 +66,10 @@ const SVGPathPlugin = () : IPlugin => {
       const absoluteDistance = svgLength * percent / 100;
       const svgPoint = $path.getPointAtLength(absoluteDistance);
 
-      const x = svgPoint.x;
-      const y = svgPoint.y;
+      const pointerRect = $pointer.getBoundingClientRect();
+
+      const x = svgPoint.x - pointerRect.width / 2;
+      const y = svgPoint.y - pointerRect.height / 2;
 
       $pointer.style.left = `${ x }px`;
       $pointer.style.top = `${ y }px`;
@@ -105,7 +106,6 @@ const SVGPathPlugin = () : IPlugin => {
     ) => {
       $component = _$component;
       getters = _getters;
-      requestUpdate = _requestUpdate;
 
       $slider = $component.shadowRoot?.getElementById('range-slider') as HTMLElement;
       if(!$slider) return;
@@ -150,7 +150,8 @@ const SVGPathPlugin = () : IPlugin => {
   top: 0;
 }
 
-.pointer{
+.pointer,
+.pointer-shape{
  transform: none !important;
  transition: none !important;
 }
