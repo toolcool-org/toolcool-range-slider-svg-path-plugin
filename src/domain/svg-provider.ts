@@ -97,5 +97,5 @@ export const createSVG = (containerWidth: number, containerHeight: number, d: st
   $path.setAttribute('stroke-linejoin', 'round');
   $svg.append($path);
 
-  return $svg;
+  return [$svg, $path];
 };

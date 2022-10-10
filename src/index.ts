@@ -21,6 +21,7 @@ const SVGPathPlugin = () : IPlugin => {
   let $slider: HTMLElement | undefined = undefined;
   let $panel: HTMLElement | undefined = undefined;
   let $svg: SVGSVGElement | undefined = undefined;
+  let $path: SVGPathElement | undefined = undefined;
 
   let resizeObserver: ResizeObserver | null = null;
 
@@ -31,8 +32,12 @@ const SVGPathPlugin = () : IPlugin => {
     const width = rect.width;
     const height = rect.height;
 
-    $svg = createSVG(width, height, svgPath);
-    $panel.before($svg);
+    const [_$svg, _$path] = createSVG(width, height, svgPath);
+    $svg = _$svg as SVGSVGElement;
+    $path = _$path as SVGPathElement;
+    $panel.before(_$svg);
+
+    updatePointers();
   };
 
   const initResizeObserver = () => {
@@ -47,13 +52,37 @@ const SVGPathPlugin = () : IPlugin => {
     resizeObserver.observe($component);
   };
 
-  const update = (_data: IPluginUpdateData) => {
+  const updatePointers = () => {
+    if(!$path) return;
 
+    const $pointers = getters?.getPointerElements() ?? [];
+    const percents = getters?.getPercents() ?? [];
+    const svgLength = $path.getTotalLength();
+
+    for(let i=0; i<percents.length; i++) {
+      const $pointer = $pointers[i];
+      if (!$pointer) continue;
+
+      const percent = percents[i];
+      const absoluteDistance = svgLength * percent / 100;
+      const svgPoint = $path.getPointAtLength(absoluteDistance);
+
+      const x = svgPoint.x;
+      const y = svgPoint.y;
+
+      $pointer.style.left = `${ x }px`;
+      $pointer.style.top = `${ y }px`;
+    }
+  };
+
+  const update = (_data: IPluginUpdateData) => {
+    updatePointers();
   };
 
   const destroy = () => {
     $svg?.remove();
     $svg = undefined;
+    $path = undefined;
     resizeObserver?.disconnect();
   };
 
@@ -115,6 +144,15 @@ const SVGPathPlugin = () : IPlugin => {
 
 .path-svg{
   color: var(--panel-bg, #2d4373);
+  position: absolute;
+  z-index: 10;
+  left: 0;
+  top: 0;
+}
+
+.pointer{
+ transform: none !important;
+ transition: none !important;
 }
 
 #range-slider{
